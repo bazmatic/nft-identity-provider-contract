@@ -24,19 +24,21 @@ export default {
     artifacts: "./build",
     tests: "./tests"
   },
+
   networks: {
     hardhat: {
       chainId: 1337,
-      accounts: [
-        {
-          privateKey: process.env.PRIVATE_KEY,
-          balance: ethers.utils
-            .parseEther(
-              process.env.LOCAL_ETHER_BALANCE?.toString() ?? defaultEtherBalance
-            )
-            .toString()
-        }
-      ],
+      accounts: {
+        mnemonic: "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
+        path: "m/44'/60'/0'/0",
+        initialIndex: 0,
+        count: 20,
+        balance: ethers.utils
+          .parseEther(
+            process.env.LOCAL_ETHER_BALANCE?.toString() ?? defaultEtherBalance
+          )
+          .toString()
+      },
       allowUnlimitedContractSize: false
     },
     kovan: {
