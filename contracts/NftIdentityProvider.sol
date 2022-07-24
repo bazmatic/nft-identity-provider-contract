@@ -114,13 +114,16 @@ contract NftIdentityProvider {
         bytes32 _value = keccak256(bytes(value));
         MetadataItem memory metadataItem = MetadataItem(key, value);
 
+        bytes32 code = identityCodeRegistry[msg.sender];
+
         // If the key requires unique values, check if the value is already in the registry
         if (permittedMetadataKeys[_key] == MetadataConstraint.Unique) {
             require(uniqueMetadataRegistry[_key][_value] == 0, "Metadata value is already in use");
+            // Add the value to the registry of unique metadata
+            uniqueMetadataRegistry[_key][_value] = code;
         }
-        // Add metadata item to identity
-        Identity memory identity = _getUserIdentity(msg.sender);
-        metadataRegistry[identity.code].push(metadataItem);
+        // Add metadata item to identity   
+        metadataRegistry[code].push(metadataItem);
     }
 
     function isPermittedMetadataKey(string memory key) public view returns (bool) {
@@ -150,7 +153,7 @@ contract NftIdentityProvider {
         return (identity.code, identity.tokenContract.tokenURI(identity.tokenID), address(identity.tokenContract), identity.tokenID);
     }
 
-    function getIdentityByUniqueKey(string memory key, string memory value) public view returns (bytes32) {
+    function getIdentityCodeByUniqueKey(string memory key, string memory value) public view returns (bytes32) {
         bytes32 _key = keccak256(bytes(key));
         bytes32 _value = keccak256(bytes(value));
         return uniqueMetadataRegistry[_key][_value];

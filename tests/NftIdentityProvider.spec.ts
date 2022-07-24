@@ -80,7 +80,6 @@ describe.only("NFT Identity Provider", function () {
         expect(uri).to.equal(nftUri, "NFT address is not correct");
         expect(contractAddress).to.equal(nftContract.address, "NFT address is not correct");
         expect(returnedTokenId).to.equal(tokenId, "Token ID is not correct");
-
     }); 
 
     it("Should not be able to log in if you are no longer the owner of the NFT", async function () {
@@ -100,8 +99,7 @@ describe.only("NFT Identity Provider", function () {
         expect(await nftIdentityProviderForDeployer.isPermittedMetadataKey("species")).to.equal(true);
     });
 
-
-    it("Should not be able to add a metadata value to an unregistered key", async function () {
+    it("Should not be able to add a metadata value for an unregistered key", async function () {
         await nftIdentityProviderForUser1.register(nftContract.address, 1);
         expect(nftIdentityProviderForUser1.addIdentityMetadata("species", "skunk")).to.be.reverted;
     });
@@ -120,9 +118,10 @@ describe.only("NFT Identity Provider", function () {
 
         await nftIdentityProviderForUser2.register(nftContract.address, 2);
         expect(nftIdentityProviderForUser2.addIdentityMetadata("species", "skunk")).to.be.reverted;
+        expect(nftIdentityProviderForUser2.addIdentityMetadata("species", "dog")).to.not.be.reverted;
     });
 
-    it.only("Should return metadata", async function () {
+    it("Should return metadata", async function () {
         await nftIdentityProviderForDeployer.registerMetadataKey("species", true); 
 
         await nftIdentityProviderForUser1.register(nftContract.address, 1);
@@ -132,7 +131,20 @@ describe.only("NFT Identity Provider", function () {
         const metadata = await nftIdentityProviderForUser1.getIdentityMetadata(code);
         const speciesMetadata = metadata.find(m => m.key === "species");
         expect(speciesMetadata.value).to.equal("skunk", "Species is not correct");
+
     });
+
+    it("Should return identity code for unique metadata value", async function () {
+        await nftIdentityProviderForDeployer.registerMetadataKey("species", true); 
+
+        await nftIdentityProviderForUser1.register(nftContract.address, 1);
+        let [ code ] = await nftIdentityProviderForUser1.getMyIdentity();
+        await nftIdentityProviderForUser1.addIdentityMetadata("species", "skunk");
+        let code2 = await nftIdentityProviderForUser1.getIdentityCodeByUniqueKey("species", "skunk");
+        expect(code).to.equal(code2);
+    });
+
+
 });
 
 
