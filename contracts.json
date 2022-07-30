@@ -1,4 +1,8 @@
 {
-  "kovan": { },
-  "localhost": { } 
+  "kovan": {},
+  "localhost": {},
+  "rinkeby": {
+    "nftAvatarProvider": "0x73BB708B32bE69bC442254FdF82564bA0ba29bB7",
+    "nft": "0xe85B835c830f91F7118c35976B1Cba8842F0E507"
+  }
 }
